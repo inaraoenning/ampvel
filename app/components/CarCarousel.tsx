@@ -4,38 +4,18 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 interface Car {
-    id: number;
-    image: string;
+    id: string;
     title: string;
     year: number;
-    price?: string;
+    price: number;
+    images: string[];
 }
 
-const cars: Car[] = [
-    {
-        id: 1,
-        image: '/car-sedan.png',
-        title: 'Audi A4 Sedan Premium',
-        year: 2023,
-        price: 'R$ 285.000'
-    },
-    {
-        id: 2,
-        image: '/car-suv.png',
-        title: 'Porsche Cayenne SUV',
-        year: 2024,
-        price: 'R$ 645.000'
-    },
-    {
-        id: 3,
-        image: '/car-sports.png',
-        title: 'Toyota GR86 Sport',
-        year: 2023,
-        price: 'R$ 345.000'
-    }
-];
+interface CarCarouselProps {
+    cars: Car[];
+}
 
-export default function CarCarousel() {
+export default function CarCarousel({ cars }: CarCarouselProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const nextSlide = () => {
@@ -79,13 +59,14 @@ export default function CarCarousel() {
                             {cars.map((car) => (
                                 <div key={car.id} className="min-w-full">
                                     <div className="relative aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200">
-                                        <Image
-                                            src={car.image}
-                                            alt={car.title}
-                                            fill
-                                            className="object-cover"
-                                            priority={car.id === 1}
-                                        />
+                                        {car.images[0] && (
+                                            <Image
+                                                src={car.images[0]}
+                                                alt={car.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        )}
                                     </div>
 
                                     {/* Car Info */}
@@ -102,11 +83,9 @@ export default function CarCarousel() {
                                                         </svg>
                                                         {car.year}
                                                     </span>
-                                                    {car.price && (
-                                                        <span className="text-2xl font-bold text-[#0099CC]">
-                                                            {car.price}
-                                                        </span>
-                                                    )}
+                                                    <span className="text-2xl font-bold text-[#0099CC]">
+                                                        R$ {car.price.toLocaleString('pt-BR')}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <button className="px-6 py-3 bg-[#003366] hover:bg-[#002244] text-white rounded-lg font-semibold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-blue-900/30">

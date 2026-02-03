@@ -1,118 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 interface Car {
-    id?: number;
-    image: string;
+    id: string;
     title: string;
     year: number;
-    price: string;
-    km: string;
+    price: number;
+    km: number;
     transmission: string;
     fuel: string;
-    description?: string;
-    extras?: string;
+    images: string[];
+    description?: string | null;
 }
 
-// Carros de exemplo (fallback caso não haja carros cadastrados)
-const exampleCars: Car[] = [
-    {
-        id: 1,
-        image: '/car-sedan.png',
-        title: 'Audi A4 Sedan Premium',
-        year: 2023,
-        price: 'R$ 285.000',
-        km: '15.000 km',
-        transmission: 'Automático',
-        fuel: 'Gasolina'
-    },
-    {
-        id: 2,
-        image: '/car-suv.png',
-        title: 'Porsche Cayenne SUV',
-        year: 2024,
-        price: 'R$ 645.000',
-        km: '8.000 km',
-        transmission: 'Automático',
-        fuel: 'Gasolina'
-    },
-    {
-        id: 3,
-        image: '/car-sports.png',
-        title: 'Toyota GR86 Sport',
-        year: 2023,
-        price: 'R$ 345.000',
-        km: '12.000 km',
-        transmission: 'Manual',
-        fuel: 'Gasolina'
-    },
-    {
-        id: 4,
-        image: '/car-sedan.png',
-        title: 'BMW Série 5 Sedan',
-        year: 2024,
-        price: 'R$ 425.000',
-        km: '5.000 km',
-        transmission: 'Automático',
-        fuel: 'Híbrido'
-    },
-    {
-        id: 5,
-        image: '/car-suv.png',
-        title: 'Mercedes GLE SUV',
-        year: 2023,
-        price: 'R$ 580.000',
-        km: '18.000 km',
-        transmission: 'Automático',
-        fuel: 'Diesel'
-    },
-    {
-        id: 6,
-        image: '/car-sports.png',
-        title: 'Chevrolet Camaro SS',
-        year: 2022,
-        price: 'R$ 395.000',
-        km: '22.000 km',
-        transmission: 'Automático',
-        fuel: 'Gasolina'
-    }
-];
+interface CarGridProps {
+    cars: Car[];
+}
 
-export default function CarGrid() {
-    const [cars, setCars] = useState<Car[]>(exampleCars);
-
-    useEffect(() => {
-        // Carregar carros do localStorage (cadastrados no admin)
-        const loadCars = () => {
-            const savedCars = localStorage.getItem('cars');
-            if (savedCars) {
-                const parsedCars = JSON.parse(savedCars);
-                if (parsedCars.length > 0) {
-                    setCars(parsedCars);
-                }
-            }
-        };
-
-        loadCars();
-
-        // Atualizar quando houver mudanças no localStorage
-        const handleStorageChange = () => {
-            loadCars();
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        // Verificar mudanças a cada segundo (para detectar mudanças na mesma aba)
-        const interval = setInterval(loadCars, 1000);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            clearInterval(interval);
-        };
-    }, []);
+export default function CarGrid({ cars }: CarGridProps) {
 
     return (
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -136,12 +44,14 @@ export default function CarGrid() {
                         >
                             {/* Car Image */}
                             <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-                                <Image
-                                    src={car.image}
-                                    alt={car.title}
-                                    fill
-                                    className="object-cover hover:scale-110 transition-transform duration-500"
-                                />
+                                {car.images[0] && (
+                                    <Image
+                                        src={car.images[0]}
+                                        alt={car.title}
+                                        fill
+                                        className="object-cover hover:scale-110 transition-transform duration-500"
+                                    />
+                                )}
                                 <div className="absolute top-4 right-4">
                                     <span className="px-3 py-1 bg-[#0099CC] text-white text-sm font-semibold rounded-full">
                                         {car.year}
@@ -159,7 +69,7 @@ export default function CarGrid() {
                                 {/* Price */}
                                 <div className="mb-4">
                                     <span className="text-3xl font-bold text-[#0099CC]">
-                                        {car.price}
+                                        R$ {car.price.toLocaleString('pt-BR')}
                                     </span>
                                 </div>
 
@@ -169,7 +79,7 @@ export default function CarGrid() {
                                         <svg className="w-5 h-5 text-[#003366]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                         </svg>
-                                        <span className="font-medium">{car.km}</span>
+                                        <span className="font-medium">{car.km.toLocaleString('pt-BR')} km</span>
                                     </div>
 
                                     <div className="flex items-center gap-2 text-sm text-gray-600">
