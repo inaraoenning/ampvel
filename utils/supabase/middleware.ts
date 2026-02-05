@@ -1,13 +1,14 @@
 import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
 export const updateSession = async (request: NextRequest) => {
     try {
         // Se variáveis de ambiente não estiverem configuradas, passa adiante
-        if (!supabaseUrl || !supabaseKey) {
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+        if (!url || !key || !url.startsWith('http')) {
+            console.warn('Supabase URL or Key missing or invalid')
             return NextResponse.next({
                 request,
             })
@@ -18,8 +19,8 @@ export const updateSession = async (request: NextRequest) => {
         })
 
         const supabase = createServerClient(
-            supabaseUrl,
-            supabaseKey,
+            url,
+            key,
             {
                 cookies: {
                     getAll() {
