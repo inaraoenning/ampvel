@@ -4,6 +4,8 @@ import CarCarousel from "./components/CarCarousel";
 import CarGrid from "./components/CarGrid";
 import { getCars } from '@/lib/actions/cars';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // Buscar carros do Supabase
   let cars = []
